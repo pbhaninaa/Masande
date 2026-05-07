@@ -1,0 +1,38 @@
+# IDE
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Backend (Maven/Spring Boot)
+Back end/target/
+Back end/.mvn/wrapper/maven-wrapper.jar
+Back end/.classpath
+Back end/.project
+Back end/.settings/
+
+# Frontend (Node/Vue)
+Front end/node_modules/
+Front end/dist/
+Front end/.cache/
+Front end/.temp/
+Front end/npm-debug.log*
+Front end/yarn-debug.log*
+Front end/yarn-error.log*
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+
+# Test coverage
+coverage/
+*.lcov
