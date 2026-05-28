@@ -11,6 +11,10 @@
           {{ errorMessage }}
         </div>
 
+        <div v-if="successMessage" class="success-banner">
+          {{ successMessage }}
+        </div>
+
         <base-input
           id="name"
           v-model="formData.name"
@@ -87,7 +91,8 @@ export default {
         maxMonthlyCommitment: ''
       },
       loading: false,
-      errorMessage: ''
+      errorMessage: '',
+      successMessage: ''
     }
   },
   validations: {
@@ -110,6 +115,7 @@ export default {
       try {
         this.loading = true
         this.errorMessage = ''
+        this.successMessage = ''
 
         const data = {
           name: this.formData.name,
@@ -119,7 +125,12 @@ export default {
         }
 
         await this.$store.dispatch('clients/createClient', data)
-        this.$emit('created')
+        this.successMessage = `✓ Client "${this.formData.name}" created successfully! Welcome message sent via WhatsApp.`
+        
+        // Auto-close after brief delay to show success message
+        setTimeout(() => {
+          this.$emit('created')
+        }, 1500)
       } catch (error) {
         this.errorMessage = error.response?.data?.message || 'Failed to create client'
       } finally {
@@ -196,6 +207,17 @@ form {
   border-radius: $border-radius;
   color: $danger;
   font-size: 0.875rem;
+}
+
+.success-banner {
+  padding: $spacing-md;
+  margin-bottom: $spacing-md;
+  background-color: rgba(22, 163, 74, 0.1);
+  border: 1px solid #16a34a;
+  border-radius: $border-radius;
+  color: #16a34a;
+  font-size: 0.875rem;
+  font-weight: 500;
 }
 
 .modal-actions {

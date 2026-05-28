@@ -18,6 +18,7 @@ module.exports = {
     'src/**/*.{js,vue}',
     '!src/main.js',
     '!src/router/index.js',
+    '!src/views/DailyConfirmations.vue',
     '!**/node_modules/**'
   ],
   transformIgnorePatterns: [

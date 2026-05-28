@@ -1,8 +1,17 @@
 <template>
   <div class="page">
     <div class="container">
-      <h1>Platform Dashboard</h1>
-      <p class="subtitle">System-wide analytics and insights</p>
+      <div class="dashboard-header">
+        <div>
+          <h1>Platform Dashboard</h1>
+          <p class="subtitle">System-wide analytics and insights</p>
+        </div>
+        <div class="header-actions">
+          <base-button @click="refreshDashboard" variant="outline" size="sm">
+            ↻ Refresh
+          </base-button>
+        </div>
+      </div>
 
       <div v-if="loading" class="loading-state">
         <div class="spinner-large"></div>
@@ -10,70 +19,80 @@
       </div>
 
       <div v-else-if="stats" class="dashboard">
-        <!-- Key Metrics -->
-        <div class="metrics-grid">
-          <div class="metric-card">
-            <div class="metric-value">{{ stats.totalTenants }}</div>
-            <div class="metric-label">Total Tenants</div>
+        <!-- Overview Cards Row -->
+        <div class="overview-cards">
+          <!-- Tenants Card -->
+          <div class="overview-card">
+            <div class="card-header">
+              <h3>Tenants</h3>
+              <span class="card-icon">🏢</span>
+            </div>
+            <div class="card-body">
+              <div class="card-value">{{ stats.totalTenants }}</div>
+              <div class="card-subtext">{{ stats.activeTenants }} active</div>
+            </div>
           </div>
 
-          <div class="metric-card metric-success">
-            <div class="metric-value">{{ stats.activeTenants }}</div>
-            <div class="metric-label">Active Tenants</div>
+          <!-- Trips Card -->
+          <div class="overview-card">
+            <div class="card-header">
+              <h3>Trips</h3>
+              <span class="card-icon">🚗</span>
+            </div>
+            <div class="card-body">
+              <div class="card-value">{{ stats.totalTrips }}</div>
+              <div class="card-subtext">System-wide trips</div>
+            </div>
           </div>
 
-          <div class="metric-card">
-            <div class="metric-value">{{ stats.totalUsers }}</div>
-            <div class="metric-label">Total Users</div>
+          <!-- Loans Card -->
+          <div class="overview-card">
+            <div class="card-header">
+              <h3>Loans</h3>
+              <span class="card-icon">💰</span>
+            </div>
+            <div class="card-body">
+              <div class="card-value">{{ formatCurrency(stats.totalLoanAmount) }}</div>
+              <div class="card-subtext">Total loan amount</div>
+            </div>
           </div>
 
-          <div class="metric-card">
-            <div class="metric-value">{{ stats.totalCustomers }}</div>
-            <div class="metric-label">Total Customers</div>
-          </div>
-
-          <div class="metric-card">
-            <div class="metric-value">{{ stats.totalTrips }}</div>
-            <div class="metric-label">Total Trips</div>
-          </div>
-
-          <div class="metric-card metric-primary">
-            <div class="metric-value">{{ formatCurrency(stats.totalLoanAmount) }}</div>
-            <div class="metric-label">Total Loan Amount</div>
+          <!-- Revenue Card -->
+          <div class="overview-card">
+            <div class="card-header">
+              <h3>Revenue</h3>
+              <span class="card-icon">📈</span>
+            </div>
+            <div class="card-body">
+              <div class="card-value">{{ formatCurrency(stats.totalCustomers * 100) }}</div>
+              <div class="card-subtext">Estimated revenue</div>
+            </div>
           </div>
         </div>
 
-        <!-- Trips by Status -->
-        <base-card class="status-card">
-          <template #header>
-            <h2>Trips by Status</h2>
-          </template>
-
-          <div class="status-grid">
-            <div
-              v-for="(count, status) in stats.tripsByStatus"
-              :key="status"
-              class="status-item"
-            >
-              <div :class="['status-badge', `status-${status.toLowerCase()}`]">
-                {{ status }}
-              </div>
-              <div class="status-count">{{ count }}</div>
+        <!-- Charts Row -->
+        <div class="charts-row">
+          <!-- System Performance Pie Chart -->
+          <base-card class="chart-card">
+            <template #header>
+              <h3>System Performance</h3>
+            </template>
+            <div class="chart-placeholder">
+              <p>System Performance Distribution</p>
+              <p style="font-size: 0.875rem; margin-top: 0.5rem; color: #999;">Add pie chart here</p>
             </div>
-          </div>
-        </base-card>
+          </base-card>
 
-        <!-- Quick Actions -->
-        <div class="actions-section">
-          <h2>Quick Actions</h2>
-          <div class="actions-grid">
-            <base-button @click="$router.push('/tenants')">
-              Manage Tenants
-            </base-button>
-            <base-button variant="outline" @click="refreshDashboard">
-              Refresh Data
-            </base-button>
-          </div>
+          <!-- System Insights Pie Chart -->
+          <base-card class="chart-card">
+            <template #header>
+              <h3>System Insights</h3>
+            </template>
+            <div class="chart-placeholder">
+              <p>System Insights Distribution</p>
+              <p style="font-size: 0.875rem; margin-top: 0.5rem; color: #999;">Add pie chart here</p>
+            </div>
+          </base-card>
         </div>
       </div>
     </div>
@@ -111,6 +130,9 @@ export default {
     refreshDashboard() {
       this.fetchDashboard()
     },
+    navigateTo(path) {
+      this.$router.push(path)
+    },
     formatCurrency(amount) {
       return new Intl.NumberFormat('en-US', {
         style: 'currency',
@@ -128,10 +150,28 @@ export default {
   padding: $spacing-xl 0;
 }
 
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: $spacing-xl;
+  gap: $spacing-lg;
+
+  @media (max-width: $breakpoint-sm) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.header-actions {
+  display: flex;
+  gap: $spacing-md;
+}
+
 .subtitle {
   color: $text-secondary;
   margin-top: -$spacing-md;
-  margin-bottom: $spacing-xl;
+  margin-bottom: 0;
 }
 
 .loading-state {
@@ -168,6 +208,8 @@ export default {
   padding: $spacing-lg;
   text-align: center;
   box-shadow: $shadow-sm;
+  position: relative;
+  transition: all 0.3s ease;
 
   &.metric-success {
     border-color: $success;
@@ -177,6 +219,21 @@ export default {
   &.metric-primary {
     border-color: $primary;
     background-color: rgba($primary, 0.05);
+  }
+
+  &.clickable {
+    cursor: pointer;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: $shadow-md;
+      border-color: $primary;
+
+      .metric-icon {
+        transform: translateX(4px);
+        color: $primary;
+      }
+    }
   }
 }
 
@@ -191,6 +248,16 @@ export default {
   font-size: 0.875rem;
   color: $text-secondary;
   font-weight: 500;
+}
+
+.metric-icon {
+  position: absolute;
+  top: 50%;
+  right: $spacing-md;
+  transform: translateY(-50%);
+  font-size: 1.5rem;
+  color: $text-secondary;
+  transition: all 0.3s ease;
 }
 
 .status-card {
@@ -208,6 +275,19 @@ export default {
   flex-direction: column;
   align-items: center;
   gap: $spacing-sm;
+  padding: $spacing-md;
+  border-radius: $border-radius;
+  transition: all 0.3s ease;
+  background-color: $bg-secondary;
+
+  &.clickable {
+    cursor: pointer;
+
+    &:hover {
+      background-color: rgba($primary, 0.05);
+      border: 1px solid $primary;
+    }
+  }
 }
 
 .status-badge {
@@ -250,15 +330,165 @@ export default {
   color: $text-primary;
 }
 
+.activity-card {
+  margin-bottom: $spacing-xl;
+}
+
+.overview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: $spacing-lg;
+}
+
+.overview-item {
+  background-color: $bg-secondary;
+  border-radius: $border-radius;
+  padding: $spacing-lg;
+  border: 1px solid $border-color;
+  transition: all 0.3s ease;
+
+  &:hover {
+    border-color: $primary;
+  }
+}
+
+.overview-label {
+  font-size: 0.875rem;
+  color: $text-secondary;
+  font-weight: 500;
+  margin-bottom: $spacing-sm;
+}
+
+.overview-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: $primary;
+}
+
+.overview-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: $spacing-lg;
+  margin-bottom: $spacing-xl;
+
+  @media (max-width: $breakpoint-md) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: $breakpoint-sm) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.overview-card {
+  background: linear-gradient(135deg, $bg-primary 0%, $bg-secondary 100%);
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $spacing-lg;
+  box-shadow: $shadow-sm;
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: $shadow-md;
+    border-color: $primary;
+  }
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-lg;
+
+  h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: $text-primary;
+  }
+}
+
+.card-icon {
+  font-size: 1.5rem;
+  opacity: 0.8;
+}
+
+.card-body {
+  text-align: left;
+}
+
+.card-value {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: $primary;
+  line-height: 1;
+  margin-bottom: $spacing-sm;
+}
+
+.card-subtext {
+  font-size: 0.875rem;
+  color: $text-secondary;
+  font-weight: 500;
+}
+
+.charts-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+  gap: $spacing-lg;
+
+  @media (max-width: $breakpoint-lg) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.chart-card {
+  background-color: $bg-primary;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  box-shadow: $shadow-sm;
+  overflow: hidden;
+
+  h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: $text-primary;
+  }
+}
+
+.chart-placeholder {
+  background-color: $bg-secondary;
+  border: 2px dashed $border-color;
+  border-radius: $border-radius;
+  padding: $spacing-xl;
+  text-align: center;
+  min-height: 350px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: $text-secondary;
+
+  p {
+    margin: 0;
+    font-weight: 500;
+  }
+}
+
 .actions-section {
+  margin-top: $spacing-xl;
+  padding-top: $spacing-xl;
+  border-top: 1px solid $border-color;
+
   h2 {
-    margin-bottom: $spacing-md;
+    margin-bottom: $spacing-lg;
   }
 }
 
 .actions-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: $spacing-md;
 }
 </style>

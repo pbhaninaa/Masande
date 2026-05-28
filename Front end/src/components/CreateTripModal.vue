@@ -54,27 +54,15 @@
         />
 
         <base-input
-          id="loanAmount"
-          v-model.number="formData.loanAmount"
-          label="Loan Amount"
+          id="price"
+          v-model.number="formData.price"
+          label="Trip Price"
           type="number"
           step="0.01"
-          placeholder="1000.00"
+          placeholder="500.00"
           required
-          :error="$v.formData.loanAmount.$error ? 'Loan amount must be greater than 0' : ''"
-          @blur="$v.formData.loanAmount.$touch()"
-        />
-
-        <base-input
-          id="interestRate"
-          v-model.number="formData.interestRate"
-          label="Interest Rate (%)"
-          type="number"
-          step="0.01"
-          placeholder="5.00"
-          required
-          :error="$v.formData.interestRate.$error ? 'Interest rate must be 0 or greater' : ''"
-          @blur="$v.formData.interestRate.$touch()"
+          :error="$v.formData.price.$error ? 'Trip price must be greater than 0' : ''"
+          @blur="$v.formData.price.$touch()"
         />
 
         <base-input

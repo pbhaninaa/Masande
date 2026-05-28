@@ -34,7 +34,7 @@ export default {
   },
 
   actions: {
-    async fetchTrips({ commit }, { page = 0, size = 10 }) {
+    async fetchTrips({ commit }, { page = 0, size = 10 } = {}) {
       try {
         commit('SET_LOADING', true)
         const response = await tripsApi.getAll(page, size)
@@ -74,7 +74,7 @@ export default {
       }
     },
 
-    async approveTrip({ dispatch }, { id, notes }) {
+    async approveTrip({ dispatch }, { id, notes } = {}) {
       try {
         const response = await tripsApi.approve(id, notes)
         await dispatch('fetchTrips', { page: 0 })
@@ -84,7 +84,7 @@ export default {
       }
     },
 
-    async rejectTrip({ dispatch }, { id, notes }) {
+    async rejectTrip({ dispatch }, { id, notes } = {}) {
       try {
         const response = await tripsApi.reject(id, notes)
         await dispatch('fetchTrips', { page: 0 })

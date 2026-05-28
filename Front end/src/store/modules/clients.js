@@ -1,4 +1,5 @@
 import clientsApi from '../../api/clients'
+import messagingApi from '../../api/messaging'
 
 export default {
   namespaced: true,
@@ -35,6 +36,19 @@ export default {
     async createClient({ dispatch }, clientData) {
       try {
         const response = await clientsApi.create(clientData)
+        
+        // Send welcome WhatsApp message to client
+        try {
+          await messagingApi.sendClientWelcomeMessage(
+            clientData.phoneNumber,
+            clientData.name
+          )
+          console.log('Welcome message sent to', clientData.phoneNumber)
+        } catch (notificationError) {
+          console.warn('Failed to send welcome message:', notificationError)
+          // Don't fail the client creation if notification fails
+        }
+        
         await dispatch('fetchClients')
         return response.data
       } catch (error) {

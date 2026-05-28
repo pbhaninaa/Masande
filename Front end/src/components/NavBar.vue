@@ -16,8 +16,9 @@
         <!-- Tenant Admin/Manager Menu -->
         <template v-else-if="isTenantAdmin">
           <router-link to="/tenant-dashboard" class="nav-link">Dashboard</router-link>
-          <router-link to="/trips" class="nav-link">Trips</router-link>
+          <router-link to="/routes" class="nav-link">Routes</router-link>
           <router-link to="/clients" class="nav-link">Clients</router-link>
+          <router-link to="/loan-configuration" class="nav-link">Loan Config</router-link>
         </template>
 
         <!-- Default Menu (Agents, Clients) -->

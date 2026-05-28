@@ -1,119 +1,82 @@
-import { shallowMount, createLocalVue } from '@vue/test-utils';
-import Vuex from 'vuex';
-import CreateTenantModal from '@/components/CreateTenantModal.vue';
+import { shallowMount, createLocalVue } from '@vue/test-utils'
+import Vuex from 'vuex'
+import CreateTenantModal from '@/components/CreateTenantModal.vue'
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+const localVue = createLocalVue()
+localVue.use(Vuex)
 
 describe('CreateTenantModal.vue', () => {
-  let wrapper;
-  let store;
-  let actions;
+  let wrapper
+  let dispatch
+
+  const createValidationMock = (invalid = false) => ({
+    $touch: jest.fn(),
+    $invalid: invalid,
+    formData: {
+      name: { $error: false, $touch: jest.fn() },
+      code: { $error: false, $touch: jest.fn() },
+      contactEmail: { $error: false, $touch: jest.fn() },
+      adminEmail: { $error: false, $touch: jest.fn() },
+      adminName: { $error: false, $touch: jest.fn() },
+      adminPassword: { $error: false, $touch: jest.fn() }
+    }
+  })
 
   beforeEach(() => {
-    actions = {
-      createTenant: jest.fn()
-    };
-
-    store = new Vuex.Store({
-      actions
-    });
+    dispatch = jest.fn().mockResolvedValue({})
 
     wrapper = shallowMount(CreateTenantModal, {
       localVue,
-      store,
-      propsData: {
-        visible: true
-      }
-    });
-  });
+      mocks: {
+        $store: { dispatch },
+        $v: createValidationMock(false)
+      },
+      stubs: ['base-input', 'base-button']
+    })
+  })
 
   afterEach(() => {
-    wrapper.destroy();
-  });
+    wrapper.destroy()
+  })
 
-  it('renders modal when visible prop is true', () => {
-    expect(wrapper.find('.modal').exists()).toBe(true);
-  });
+  it('renders modal content', () => {
+    expect(wrapper.find('.modal').exists()).toBe(true)
+  })
 
-  it('initializes with empty form data', () => {
-    expect(wrapper.vm.formData.tenantName).toBe('');
-    expect(wrapper.vm.formData.tenantCode).toBe('');
-    expect(wrapper.vm.formData.adminEmail).toBe('');
-    expect(wrapper.vm.formData.adminPassword).toBe('');
-    expect(wrapper.vm.formData.adminFirstName).toBe('');
-    expect(wrapper.vm.formData.adminLastName).toBe('');
-  });
+  it('submits and dispatches tenant creation', async () => {
+    wrapper.setData({
+      formData: {
+        name: 'Acme Transport',
+        code: 'ACME001',
+        contactEmail: 'contact@acme.com',
+        contactPhone: '+27110000000',
+        adminEmail: 'admin@acme.com',
+        adminName: 'Admin User',
+        adminPhone: '+27119999999',
+        adminPassword: 'admin123'
+      }
+    })
 
-  it('validates required fields', async () => {
-    // Try to submit empty form
-    await wrapper.vm.handleSubmit();
+    await wrapper.vm.handleSubmit()
 
-    // Should have errors for required fields
-    expect(wrapper.vm.errors.tenantName).toBeTruthy();
-    expect(wrapper.vm.errors.tenantCode).toBeTruthy();
-    expect(wrapper.vm.errors.adminEmail).toBeTruthy();
-  });
+    expect(dispatch).toHaveBeenCalledWith('tenants/createTenant', {
+      name: 'Acme Transport',
+      code: 'ACME001',
+      contactEmail: 'contact@acme.com',
+      contactPhone: '+27110000000',
+      adminEmail: 'admin@acme.com',
+      adminName: 'Admin User',
+      adminPhone: '+27119999999',
+      adminPassword: 'admin123'
+    })
+    expect(wrapper.emitted().created).toBeTruthy()
+  })
 
-  it('validates email format', async () => {
-    wrapper.vm.formData.adminEmail = 'invalid-email';
-    await wrapper.vm.$nextTick();
+  it('does not dispatch when form is invalid', async () => {
+    wrapper.vm.$v = createValidationMock(true)
 
-    expect(wrapper.vm.isValidEmail('invalid-email')).toBe(false);
-    expect(wrapper.vm.isValidEmail('valid@email.com')).toBe(true);
-  });
+    await wrapper.vm.handleSubmit()
 
-  it('validates tenant code format', () => {
-    expect(wrapper.vm.isValidTenantCode('VALID_CODE')).toBe(true);
-    expect(wrapper.vm.isValidTenantCode('invalid code')).toBe(false);
-    expect(wrapper.vm.isValidTenantCode('invalid-code')).toBe(false);
-  });
-
-  it('submits form with valid data', async () => {
-    wrapper.vm.formData = {
-      tenantName: 'Test Tenant',
-      tenantCode: 'TEST_TENANT',
-      adminEmail: 'admin@test.com',
-      adminPassword: 'TestPass123!',
-      adminFirstName: 'John',
-      adminLastName: 'Doe',
-      contactEmail: 'contact@test.com',
-      contactPhone: '+27123456789',
-      address: '123 Test Street'
-    };
-
-    await wrapper.vm.handleSubmit();
-
-    expect(actions.createTenant).toHaveBeenCalledWith(
-      expect.any(Object),
-      wrapper.vm.formData
-    );
-  });
-
-  it('emits close event when cancel button is clicked', async () => {
-    await wrapper.vm.close();
-    expect(wrapper.emitted().close).toBeTruthy();
-  });
-
-  it('clears form data when resetForm is called', () => {
-    wrapper.vm.formData.tenantName = 'Test';
-    wrapper.vm.errors.tenantName = 'Error';
-
-    wrapper.vm.resetForm();
-
-    expect(wrapper.vm.formData.tenantName).toBe('');
-    expect(wrapper.vm.errors.tenantName).toBe('');
-  });
-
-  it('displays error messages for invalid input', async () => {
-    wrapper.vm.formData.adminEmail = 'invalid';
-    await wrapper.vm.validateField('adminEmail');
-
-    expect(wrapper.vm.errors.adminEmail).toBeTruthy();
-  });
-
-  it('validates password strength', () => {
-    expect(wrapper.vm.isValidPassword('weak')).toBe(false);
-    expect(wrapper.vm.isValidPassword('StrongPass123!')).toBe(true);
-  });
-});
+    expect(dispatch).not.toHaveBeenCalled()
+  })
+})

@@ -10,73 +10,80 @@
       </div>
 
       <div v-else-if="stats" class="dashboard">
-        <!-- Key Metrics -->
-        <div class="metrics-grid">
-          <div class="metric-card">
-            <div class="metric-value">{{ stats.totalUsers }}</div>
-            <div class="metric-label">Total Users</div>
+        <!-- Overview Cards Row -->
+        <div class="overview-cards">
+          <!-- Users Card -->
+          <div class="overview-card">
+            <div class="card-header">
+              <h3>Users</h3>
+              <span class="card-icon">👥</span>
+            </div>
+            <div class="card-body">
+              <div class="card-value">{{ stats.totalUsers }}</div>
+              <div class="card-subtext">Total users</div>
+            </div>
           </div>
 
-          <div class="metric-card">
-            <div class="metric-value">{{ stats.totalCustomers }}</div>
-            <div class="metric-label">Total Customers</div>
+          <!-- Customers Card -->
+          <div class="overview-card">
+            <div class="card-header">
+              <h3>Customers</h3>
+              <span class="card-icon">🏪</span>
+            </div>
+            <div class="card-body">
+              <div class="card-value">{{ stats.totalCustomers }}</div>
+              <div class="card-subtext">{{ stats.activeCustomers }} active</div>
+            </div>
           </div>
 
-          <div class="metric-card metric-success">
-            <div class="metric-value">{{ stats.activeCustomers }}</div>
-            <div class="metric-label">Active Customers</div>
+          <!-- Trips Card -->
+          <div class="overview-card">
+            <div class="card-header">
+              <h3>Trips</h3>
+              <span class="card-icon">🚗</span>
+            </div>
+            <div class="card-body">
+              <div class="card-value">{{ stats.totalTrips }}</div>
+              <div class="card-subtext">Total trips</div>
+            </div>
           </div>
 
-          <div class="metric-card">
-            <div class="metric-value">{{ stats.totalTrips }}</div>
-            <div class="metric-label">Total Trips</div>
-          </div>
-
-          <div class="metric-card metric-primary">
-            <div class="metric-value">{{ formatCurrency(stats.totalLoanAmount) }}</div>
-            <div class="metric-label">Total Loan Amount</div>
-          </div>
-
-          <div class="metric-card metric-warning">
-            <div class="metric-value">{{ formatCurrency(stats.pendingLoanAmount) }}</div>
-            <div class="metric-label">Pending Loans</div>
+          <!-- Loans Card -->
+          <div class="overview-card">
+            <div class="card-header">
+              <h3>Loans</h3>
+              <span class="card-icon">💰</span>
+            </div>
+            <div class="card-body">
+              <div class="card-value">{{ formatCurrency(stats.totalLoanAmount) }}</div>
+              <div class="card-subtext">{{ formatCurrency(stats.pendingLoanAmount) }} pending</div>
+            </div>
           </div>
         </div>
 
-        <!-- Trips by Status -->
-        <base-card class="status-card">
-          <template #header>
-            <h2>Trips by Status</h2>
-          </template>
-
-          <div class="status-grid">
-            <div
-              v-for="(count, status) in stats.tripsByStatus"
-              :key="status"
-              class="status-item"
-            >
-              <div :class="['status-badge', `status-${status.toLowerCase()}`]">
-                {{ status }}
-              </div>
-              <div class="status-count">{{ count }}</div>
+        <!-- Charts Row -->
+        <div class="charts-row">
+          <!-- Performance Pie Chart -->
+          <base-card class="chart-card">
+            <template #header>
+              <h3>Performance</h3>
+            </template>
+            <div class="chart-placeholder">
+              <p>Performance Distribution</p>
+              <p style="font-size: 0.875rem; margin-top: 0.5rem; color: #999;">Add pie chart here</p>
             </div>
-          </div>
-        </base-card>
+          </base-card>
 
-        <!-- Quick Actions -->
-        <div class="actions-section">
-          <h2>Quick Actions</h2>
-          <div class="actions-grid">
-            <base-button @click="$router.push('/trips')">
-              View All Trips
-            </base-button>
-            <base-button variant="outline" @click="$router.push('/clients')">
-              Manage Clients
-            </base-button>
-            <base-button variant="secondary" @click="refreshDashboard">
-              Refresh Data
-            </base-button>
-          </div>
+          <!-- Insights Pie Chart -->
+          <base-card class="chart-card">
+            <template #header>
+              <h3>Insights</h3>
+            </template>
+            <div class="chart-placeholder">
+              <p>Insights Distribution</p>
+              <p style="font-size: 0.875rem; margin-top: 0.5rem; color: #999;">Add pie chart here</p>
+            </div>
+          </base-card>
         </div>
       </div>
     </div>
@@ -258,15 +265,114 @@ export default {
   color: $text-primary;
 }
 
-.actions-section {
-  h2 {
-    margin-bottom: $spacing-md;
+.overview-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: $spacing-lg;
+  margin-bottom: $spacing-xl;
+
+  @media (max-width: $breakpoint-md) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: $breakpoint-sm) {
+    grid-template-columns: 1fr;
   }
 }
 
-.actions-grid {
+.overview-card {
+  background: linear-gradient(135deg, $bg-primary 0%, $bg-secondary 100%);
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: $spacing-lg;
+  box-shadow: $shadow-sm;
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: $shadow-md;
+    border-color: $primary;
+  }
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-lg;
+
+  h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: $text-primary;
+  }
+}
+
+.card-icon {
+  font-size: 1.5rem;
+  opacity: 0.8;
+}
+
+.card-body {
+  text-align: left;
+}
+
+.card-value {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: $primary;
+  line-height: 1;
+  margin-bottom: $spacing-sm;
+}
+
+.card-subtext {
+  font-size: 0.875rem;
+  color: $text-secondary;
+  font-weight: 500;
+}
+
+.charts-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: $spacing-md;
+  grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+  gap: $spacing-lg;
+
+  @media (max-width: $breakpoint-lg) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.chart-card {
+  background-color: $bg-primary;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  box-shadow: $shadow-sm;
+  overflow: hidden;
+
+  h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: $text-primary;
+  }
+}
+
+.chart-placeholder {
+  background-color: $bg-secondary;
+  border: 2px dashed $border-color;
+  border-radius: $border-radius;
+  padding: $spacing-xl;
+  text-align: center;
+  min-height: 350px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: $text-secondary;
+
+  p {
+    margin: 0;
+    font-weight: 500;
+  }
 }
 </style>

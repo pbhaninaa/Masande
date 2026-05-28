@@ -40,16 +40,40 @@ const routes = [
     meta: { requiresAuth: true, roles: ['PLATFORM_ADMIN'] }
   },
   {
+    path: '/tenants/:id',
+    name: 'TenantDetail',
+    component: () => import('../views/TenantDetail.vue'),
+    meta: { requiresAuth: true, roles: ['PLATFORM_ADMIN'] }
+  },
+  {
     path: '/trips',
     name: 'Trips',
     component: () => import('../views/Trips.vue'),
     meta: { requiresAuth: true }
   },
   {
+    path: '/platform-trips',
+    name: 'PlatformTrips',
+    component: () => import('../views/PlatformTrips.vue'),
+    meta: { requiresAuth: true, roles: ['PLATFORM_ADMIN'] }
+  },
+  {
+    path: '/routes',
+    name: 'Routes',
+    component: () => import('../views/Routes.vue'),
+    meta: { requiresAuth: true, roles: ['TENANT_ADMIN', 'TENANT_MANAGER'] }
+  },
+  {
     path: '/clients',
     name: 'Clients',
     component: () => import('../views/Clients.vue'),
     meta: { requiresAuth: true }
+  },
+  {
+    path: '/loan-configuration',
+    name: 'LoanConfiguration',
+    component: () => import('../views/LoanConfiguration.vue'),
+    meta: { requiresAuth: true, roles: ['TENANT_ADMIN', 'TENANT_MANAGER'] }
   }
 ]
 
