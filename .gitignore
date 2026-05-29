@@ -25,10 +25,17 @@ Front end/npm-debug.log*
 Front end/yarn-debug.log*
 Front end/yarn-error.log*
 
-# Environment
+# Environment (never commit secrets)
 .env
 .env.local
 .env.*.local
+.env.sit
+.env.prod
+Back end/.env
+Back end/.env.sit
+Back end/.env.prod
+Front end/.env.local
+Front end/.env.production.local
 
 # Logs
 *.log
